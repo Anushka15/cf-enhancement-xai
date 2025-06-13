@@ -5,7 +5,7 @@ from scipy.spatial import KDTree
 def mi_score(feature1, feature2):
     return mutual_info_classif(feature1, feature2)
 
-def MI (features, X):
+def MI(features, X):
     feature_pairs = {}
     mi_pairs = []
     for i,j in features: #features should be a list of tuples of every possible combination
@@ -27,4 +27,15 @@ def FNN(desired_space,x,radius):
     nn = pd.DataFrame.from_records(nn, columns=x.columns)
     return nn
 
-
+def intervals(nn, perturb_map, f2change, x):
+    subspace = {}
+    for i in perturb_map:
+        lower = p[i][0]
+        upper = p[i][0]
+        if upper >= nn[i].max():
+            subspace[i] = [lower, nn[i].max()]
+        elif lower <= nn[i].min():
+            subspace[i] = [nn[i].min(), upper]
+        else:
+            subspace[i] = [lower, upper]
+    return subspace
