@@ -1,8 +1,10 @@
+import pandas as pd
 from sklearn.feature_selection import mutual_info_classif
+import numpy as np
+from scipy.spatial import KDTree
 def mi_score(feature1, feature2):
     return mutual_info_classif(feature1, feature2)
 
-#
 def MI (features, X):
     feature_pairs = {}
     mi_pairs = []
@@ -17,4 +19,12 @@ def MI (features, X):
         if pair not in mi_pairs:
             mi_pairs.append(pair) #return only the pairs in a list
     return mi_pairs
+
+def FNN(desired_space,x,radius):
+    tree = KDTree(desired_space)
+    idx = tree.query_ball_point(x,r=radius)
+    nn = tree.data[idx]
+    nn = pd.DataFrame.from_records(nn, columns=x.columns)
+    return nn
+
 
