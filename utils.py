@@ -2,7 +2,7 @@ from sklearn.feature_selection import mutual_info_classif
 def mi_score(feature1, feature2):
     return mutual_info_classif(feature1, feature2)
 
-#
+
 def MI (features, X):
     feature_pairs = {}
     mi_pairs = []
