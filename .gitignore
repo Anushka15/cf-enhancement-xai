@@ -1,0 +1,33 @@
+# -----------------------------------------------------------------------------
+# Python
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+*.log
+*.sqlite3
+.env
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Pytest cache
+.cache/
+
+# VSCode/IDE files
+.vscode/
+.idea/
+*.swp
+
+# Build/Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
