@@ -33,7 +33,7 @@ def load_input_data(test_size=0.3, random_state=42):
         X, y, test_size=test_size, stratify=y, random_state=random_state
     )
 
-    return X_train, X_test, y_train, y_test, data.metadata, data.variables
+    return X_train, X_test, y_train, y_test, data.metadata, data.variables, dataset_df
 
 def preprocess_data(X_train, X_test, numeric_columns):
     """
