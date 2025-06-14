@@ -2,6 +2,7 @@ from src.utilities.plausability import check_plausability
 
 def SF(x,X_train,cat_f,p,f,t,step):
     """
+    SF permutation doesnt use MI and subspace (so also no NN from KDTree)
     param x: instance to be explained with CF
     param X_train: NOT normalized X_train (see if this is practical, if not - edit check_plausability())
     param cat_f: categorical features
