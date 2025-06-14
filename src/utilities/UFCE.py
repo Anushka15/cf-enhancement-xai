@@ -46,5 +46,33 @@ def DF(X, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 h = regressor(X,i,j)
                 g = classifier(X,i,j)
                 traverse_space = sorted(random.uniform(start,end))
+                while len(traverse_space) > 0:
+                    mid = start + (end-start)/2
+                    z.loc[:,i] = traverse_space[mid]
+                    z=z.loc[:,z.columns != j]
+                    if j in num_f:
+                        new_j = h(z)
+                        z.loc[:,j] = new_j
+                    else:
+                        new_j=g(z)
+                        z.loc[:,j] = new_j
+                    if f(z) == t and check_plausability(x,z,X) == 1:
+                        return z
+                    else:
+                        try:
+                            del traverse_space[:mid]
+                        except
+                            pass
+
+            if (i in cat_f and j in cat_f) and (i not in protect_f and j not in protect_f):
+                z.loc[:,i] = subspace[i][1]
+                z.loc[:,j] = subspace[j][1]
+                if f(z) == t and check_plausability(x,z,X) == 1:
+                    return z
+    return z
+
+#TF still needs to be done
+
+
 
 
