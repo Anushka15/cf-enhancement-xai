@@ -52,8 +52,8 @@ def preprocess_data(X_train, X_test, numeric_columns):
         pd.DataFrame: Processed X_test
     """
     # One-hot encode categorical features
-    X_train = pd.get_dummies(X_train, drop_first=True, dtype=int)
-    X_test = pd.get_dummies(X_test, drop_first=True, dtype=int)
+    X_train = pd.get_dummies(X_train, drop_first=True)
+    X_test = pd.get_dummies(X_test, drop_first=True)
 
     # Align test columns to train columns
     X_test = X_test.reindex(columns=X_train.columns, fill_value=0)
