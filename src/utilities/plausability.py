@@ -7,6 +7,7 @@ def check_plausability(x,z,X):
     """
     Check if CF is plausible based on Local Outlier Factor (LOF) Algorithm
     param x: test instance you want to explain with CF
+    param X: NOT normalized training data (see if this is practical, if not- remove scaler)
     param z: CF of x
     param X: training data
     returns: 1 or 0, representing if CF is plausible or not

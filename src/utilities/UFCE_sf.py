@@ -1,8 +1,9 @@
+from src.utilities.plausability import check_plausability
 
-
-def SF(x,cat_f,p,f,t,step):
+def SF(x,X_train,cat_f,p,f,t,step):
     """
     param x: instance to be explained with CF
+    param X_train: NOT normalized X_train (see if this is practical, if not - edit check_plausability())
     param cat_f: categorical features
     param p: user defined constrained features
     param f: black box model
@@ -18,7 +19,7 @@ def SF(x,cat_f,p,f,t,step):
                 tempdf = x.copy()
                 mid = start + (end-start)/2
                 tempdf.loc[:,i] = mid
-                if f(tempdf) = t and plausible(tempdf): #plausability through outlier detection algorithm LOF (to implement)
+                if f(tempdf) == t and check_plausability(x,tempdf,X_train) == 1: #plausability through outlier detection algorithm LOF (to implement)
                     z = tempdf
                     end = mid - step[i] # try to make feature value smaller
                 else:
@@ -26,6 +27,6 @@ def SF(x,cat_f,p,f,t,step):
         else: #if i is categorical
             z = x
             z.loc[:,i] = (1-end) #set feature i as the reverse value (check if this works with one-hot encoding)
-            if f(z) = t and plausible(z):
+            if f(z) == t and check_plausability(x,z,X_train) == 1:
                 return z
     return z
