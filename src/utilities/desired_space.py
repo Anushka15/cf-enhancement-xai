@@ -1,5 +1,5 @@
 import pandas as pd
-def desired_space(desired_output, data): #entire data so x and y
+def desired_space(desired_output, data): #entire data so x and y #the authors do this over train and test, is this correct? how generalizable is it then?
     """
     Creates feature space of instances with desired output
     param desired_output: y, either 1 or 2
