@@ -35,7 +35,7 @@ def load_input_data(test_size=0.3, random_state=42):
 
     return X_train, X_test, y_train, y_test, data.metadata, data.variables, dataset_df
 
-def preprocess_data(X_train, X_test, numeric_columns):
+def preprocess_data(X_train, X_test, datasetdf, numeric_columns):
     """
     Applies preprocessing to train and test features:
     - One-hot encodes categorical variables
@@ -52,15 +52,17 @@ def preprocess_data(X_train, X_test, numeric_columns):
         pd.DataFrame: Processed X_test
     """
     # One-hot encode categorical features
-    X_train = pd.get_dummies(X_train, drop_first=True, dtype=int)
-    X_test = pd.get_dummies(X_test, drop_first=True, dtype=int)
+    X_train = pd.get_dummies(X_train, drop_first=True)
+    X_test = pd.get_dummies(X_test, drop_first=True)
+    datasetdf = pd.get_dummies(datasetdf, drop_first=True)
 
     # Align test columns to train columns
     X_test = X_test.reindex(columns=X_train.columns, fill_value=0)
 
     # Standardize numeric columns
     scaler = StandardScaler()
-    X_train[numeric_columns] = scaler.fit_transform(X_train[numeric_columns])
+    X_train[numeric_columns] = scaler.fit_transform(X_train[numeric_columns]) #fit on trainingdata
     X_test[numeric_columns] = scaler.transform(X_test[numeric_columns])
+    datasetdf[numeric_columns] = scaler.transform(datasetdf[numeric_columns])
 
-    return X_train, X_test
+    return X_train, X_test, datasetdf

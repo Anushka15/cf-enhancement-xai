@@ -10,9 +10,13 @@ def FNN(desired_space,x,radius):
     returns: the indices of the nearest neighbours found, these are possible perturbations, not the final ones, because MI is used for that as well.
     """
     tree = KDTree(desired_space)
-    idx = tree.query_ball_point(x,r=radius)
-    nn = tree.data[idx]
-    nn = pd.DataFrame.from_records(nn, columns=x.columns)
+    # Make sure x is 1D
+    if isinstance(x, pd.DataFrame):
+        x = x.values[0]
+    elif isinstance(x, pd.Series):
+        x = x.values
+    idx = tree.query_ball_point(x,r=radius) #list of indices
+    nn = desired_space.iloc[idx].copy() # directly get the rows from desired space dataframe
     return nn
 
 def intervals(nn, p, f2change, x):
@@ -23,10 +27,12 @@ def intervals(nn, p, f2change, x):
     returns: subspace
     """
     subspace = {}
-    for i in p:
+    for i in p: # this effectively goes through f2change
         lower = p[i][0]
+        print(lower)
         upper = p[i][1]
-        if upper >= nn[i].max():
+        print(upper)
+        if upper >= nn[i].max(): # For feature/column i, consider max value across all neighbor datapoints in nn (all rows)
             subspace[i] = [lower, nn[i].max()]
         elif lower <= nn[i].min():
             subspace[i] = [nn[i].min(), upper]
