@@ -4,7 +4,7 @@ from scipy.spatial import KDTree
 def FNN(desired_space,x,radius):
     """
     Creates a KDTree object for finding the region for perturbations
-    param desired_space: the feature space to consider (a collection of feature vectors)
+    param desired_space: the feature space to consider (a collection of feature vectors). It is a subset of the training data which contains only positive outcome-based data instances.
     param x: instance for which we want to find neighbours/perturbations
     param radius: to measure the distance from x to a point
     returns: the indices of the nearest neighbours found, these are possible perturbations, not the final ones, because MI is used for that as well.
