@@ -1,3 +1,5 @@
+import random
+
 from src.utilities.plausability import check_plausability
 
 def SF(x,X_train,cat_f,p,f,t,step):
@@ -31,3 +33,18 @@ def SF(x,X_train,cat_f,p,f,t,step):
             if f(z) == t and check_plausability(x,z,X_train) == 1:
                 return z
     return z
+
+def DF(X, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
+    for f_pair in mi_pair:
+        i = f_pair[0]
+        j = f_pair[1] # i is first feature, j is second feature from tuple
+        z = x # initialize CF
+        if i in subspace and j in subspace:
+            if (i in num_f and (j in num_f or j in cat_f)) and (i not in protect_f and j not in protect_f):
+                start = subspace[i][0]
+                end = subspace[i][1]
+                h = regressor(X,i,j)
+                g = classifier(X,i,j)
+                traverse_space = sorted(random.uniform(start,end))
+
+
