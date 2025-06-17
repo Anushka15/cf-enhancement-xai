@@ -17,28 +17,38 @@ def summarize_features(X):
 import pandas as pd
 
 
-def extract_statistical_rules(X_pos, num_quantiles=(0.1, 0.9), cat_threshold=0.75):
+def extract_statistical_rules(X_pos, X_other, num_quantiles=(0.1, 0.9), cat_threshold=0.85):
     """
     Creates a compact rule dictionary for the positive class.
     Returns: dict like {'Attribute5': (10000, 30000), 'Attribute6': 'A11'}
     """
     rules = {}
     for col in X_pos.columns:
-        col_data = X_pos[col]
+        col_data_pos = X_pos[col]
 
-        if pd.api.types.is_numeric_dtype(col_data):
-            q_low = col_data.quantile(num_quantiles[0])
-            q_high = col_data.quantile(num_quantiles[1])
+        if pd.api.types.is_numeric_dtype(col_data_pos):
+            q_low = col_data_pos.quantile(num_quantiles[0])
+            q_high = col_data_pos.quantile(num_quantiles[1])
             rules[col] = (round(q_low, 3), round(q_high, 3))
 
         else:
-            val_counts = col_data.value_counts(normalize=True)
-            top_val = val_counts.idxmax()
-            freq = val_counts.max()
-            if freq >= cat_threshold:
-                rules[col] = top_val  # e.g., 'A11'
+            # Frequency in positive class
+            pos_freq = col_data_pos.value_counts(normalize=True)
 
+            # Frequency in negative/other class
+            other_freq = X_other[col].value_counts(normalize=True)
+
+            # Sort by confidence (pos_freq descending)
+            for val, conf in pos_freq.items():
+                if conf >= cat_threshold:
+                    other_conf = other_freq.get(val, 0)
+                    # Only add if it's more specific to the positive class
+                    if conf > other_conf:
+                        rules[col] = val
+                        break  # Only the top valid one
     return rules
+
+
 
 
 def top_features(clf, X_train_proc, y_train, n_repeats=5, random_state=42):
