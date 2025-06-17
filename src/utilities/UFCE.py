@@ -30,7 +30,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
             mid = start + (end - start) / 2
             tempdf.loc[:, i] = mid
             if f.predict(tempdf)[0] == t and check_plausability(x, tempdf,
-                                                                X_train) == 1:  # plausability through outlier detection algorithm LOF (to implement)
+                                                                X_train) == 1:
                 z = tempdf
                 end = mid - step[i]  # try to make feature value smaller
             else:
