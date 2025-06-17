@@ -2,7 +2,7 @@ import random
 
 from src.utilities.plausability import check_plausability
 
-def SF(x,X_train,cat_f,p,f,t,step):
+def SF(x,X_train,cat_f,p_num,p_cat,f,t,step):
     """
     SF permutation doesnt use MI and subspace (so also no NN from KDTree)
     param x: instance to be explained with CF
