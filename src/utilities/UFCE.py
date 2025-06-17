@@ -15,6 +15,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
     param step: steps in how to traverse p lower and upper bounds. Only applies to numerical features
     returns: z, a valid countefactual instance
     """
+    print(x)
     for i in p_cat: #deze for loop eerst betekend dat cat sws verandert wordt
         z = x.copy()
         z.loc[:,i] = p_cat[i].value() #z.loc[:,i] is select all rows of column with name i #cat zijn niet one-hot encoded hier, dus x moet niet one-hot zijn en model er ook niet op getraind zijn
