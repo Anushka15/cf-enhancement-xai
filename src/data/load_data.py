@@ -66,35 +66,3 @@ def preprocess_data(X_train, X_test, datasetdf, numeric_columns):
     datasetdf[numeric_columns] = scaler.transform(datasetdf[numeric_columns])
 
     return X_train, X_test, datasetdf
-
-def preprocess_data_no_onehot(X_train, X_test, datasetdf, numeric_columns):
-    """
-    Applies preprocessing to train and test features:
-    - One-hot encodes categorical variables
-    - Aligns test set columns to match train set
-    - Standardizes specified numeric columns
-
-    Args:
-        X_train (pd.DataFrame): Raw training features
-        X_test (pd.DataFrame): Raw test features
-        numeric_columns (List[str]): List of numeric columns to standardize
-
-    Returns:
-        pd.DataFrame: Processed X_train
-        pd.DataFrame: Processed X_test
-    """
-    # One-hot encode categorical features
-    #X_train = pd.get_dummies(X_train, drop_first=True)
-    #X_test = pd.get_dummies(X_test, drop_first=True)
-    #datasetdf = pd.get_dummies(datasetdf, drop_first=True)
-
-    # Align test columns to train columns
-    X_test = X_test.reindex(columns=X_train.columns, fill_value=0)
-
-    # Standardize numeric columns
-    scaler = StandardScaler()
-    X_train[numeric_columns] = scaler.fit_transform(X_train[numeric_columns]) #fit on trainingdata
-    X_test[numeric_columns] = scaler.transform(X_test[numeric_columns])
-    datasetdf[numeric_columns] = scaler.transform(datasetdf[numeric_columns])
-
-    return X_train, X_test, datasetdf
