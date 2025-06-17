@@ -15,7 +15,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
     param step: steps in how to traverse p lower and upper bounds. Only applies to numerical features
     returns: z, a valid countefactual instance
     """
-    print(x)
+    print("original x prediction: ", f.predict(x))
     for i in p_cat: #deze for loop eerst betekend dat cat sws verandert wordt
         z = x.copy()
         #z.loc[:,i] = p_cat[i].value() #z.loc[:,i] is select all rows of column with name i #cat zijn niet one-hot encoded hier, dus x moet niet one-hot zijn en model er ook niet op getraind zijn
@@ -29,22 +29,28 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
         # Set the specific desired one-hot feature to 1
         target_col = f"{i}_{p_cat[i]}"
         if target_col in z.columns:
-            z.loc[:, target_col] = 1
+            z.loc[:, target_col] = True
         else:
-            print(f"Warning: {target_col} not found in columns.")
+            print(f"all columns are 0 for this category, as it is the reference feature value")
 
         # kan bovenstaande ook conditioneren op onderstaande, anders niet veranderen
-        if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
+        #if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
+        proba = f.predict_proba(z)[0][1]
+        print(f"prediction with cat {target_col}: class={f.predict(z)[0]}, prob={proba:.4f}")
+        if f.predict(z)[0] == t:
                 return z
     for i in p_num:
         print("goes in numerical, no CF based on cat found")
         z = None
-        start = i[0] #lower bound
-        end = i[1] #upper bound
+        start, end = p_num[i]
+        print("start: ",start)
+        print("end: ", end)
         while start <= end:
             tempdf = x.copy()
             mid = start + (end - start) / 2
             tempdf.loc[:, i] = mid
+            proba = f.predict_proba(tempdf)[0][1]
+            print(f"prediction with changed {p_num[i]}: class={f.predict(tempdf)[0]}, prob={proba:.4f}")
             if f.predict(tempdf)[0] == t and check_plausability(x, tempdf,
                                                                 X_train) == 1:
                 z = tempdf
