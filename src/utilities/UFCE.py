@@ -37,7 +37,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
         #if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
         proba = f.predict_proba(z)[0][1]
         print(f"prediction with cat {target_col}: class={f.predict(z)[0]}, prob={proba:.4f}")
-        if f.predict(z)[0] == t:
+        if int(f.predict(z)[0]) == t:
                 return z
     for i in p_num:
         print("goes in numerical, no CF based on cat found")
@@ -53,7 +53,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
             print(f"prediction with changed {p_num[i]}: class={f.predict(tempdf)[0]}, prob={proba:.4f}")
             # if f.predict(tempdf)[0] == t and check_plausability(x, tempdf,
             #                                                     X_train) == 1:
-            if f.predict(tempdf)[0] == t:
+            if int(f.predict(tempdf)[0]) == t:
                 z_s.append(tempdf)
                 end = mid - step[i]  # try to make feature value smaller
             else:
