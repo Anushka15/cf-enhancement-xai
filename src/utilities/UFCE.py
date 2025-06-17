@@ -94,16 +94,16 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
 #     return z # if binary search for numerical feature does not succeed, returns None (no CF) #this is likely another fault in the algorithm from the paper, because it keeps looking, which has this risk of overwriting for numerical features
 
 def DF(X, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
+    # does not use p-map
     for f_pair in mi_pair:
         i = f_pair[0]
         j = f_pair[1] # i is first feature, j is second feature from tuple
-        z = x # initialize CF
+        z = x.copy() # initialize CF
         if i in subspace and j in subspace:
-            if (i in num_f and (j in num_f or j in cat_f)) and (i not in protect_f and j not in protect_f):
+            if (i in num_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0]
                 end = subspace[i][1]
                 h = regressor(X,i,j)
-                g = classifier(X,i,j)
                 traverse_space = sorted(random.uniform(start,end))
                 while len(traverse_space) > 0:
                     mid = start + (end-start)/2
@@ -119,11 +119,20 @@ def DF(X, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                         return z
                     else:
                         try:
-                            del traverse_space[:mid]
+                            del traverse_space[:mid] # make the space smaller
                         except:
                             pass
 
-            if (i in cat_f and j in cat_f) and (i not in protect_f and j not in protect_f):
+            elif (i in cat_f and j in num_f) and (i not in protect_f and j not in protect_f):
+                h = regressor(X,i,j)
+                g = classifier(X,i,j)
+
+            elif (i in num_f and j in cat_f) and (i not in protect_f and j not in protect_f):
+                h = regressor(X,i,j)
+                g = classifier(X,i,j)
+
+            elif (i in cat_f and j in cat_f) and (i not in protect_f and j not in protect_f):
+                g = classifier(X, i, j)
                 z.loc[:,i] = subspace[i][1]
                 z.loc[:,j] = subspace[j][1]
                 if f(z) == t and check_plausability(x,z,X) == 1:
@@ -131,6 +140,12 @@ def DF(X, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
     return z
 
 #TF still needs to be done
+
+def regressor(X, f_ì, f_j):
+    # train regressor to predict feature j based on i from traverse space
+
+def classifier(X, f_i, f_j):
+    # train regressor to predict feature j based on i from traverse space
 
 
 
