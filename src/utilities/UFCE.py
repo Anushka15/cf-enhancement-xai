@@ -2,38 +2,73 @@ import random
 
 from src.utilities.plausability import check_plausability
 
-def SF(x,X_train,cat_f,p_num,p_cat,f,t,step):
+def SF(x,X_train,p_num,p_cat,f,t,step):
     """
     SF permutation doesnt use MI and subspace (so also no NN from KDTree)
     param x: instance to be explained with CF
     param X_train: NOT normalized X_train (see if this is practical, if not - edit check_plausability())
     param cat_f: categorical features
-    param p: user defined constrained features
+    param p_num: user defined constrained numerical features
+    param p_cat: user defined constrained categorical features
     param f: black box model
     param t: target outcome
-    param step: steps in how to traverse p lower and upper bounds
+    param step: steps in how to traverse p lower and upper bounds. Only applies to numerical features
     returns: z, a valid countefactual instance
     """
-    for i in p: #go over each feature in user defined constrained features
-        z = None
-        start = p[i][0] #lower bound
-        end = p[i][1] #upper bound
-        if i not in cat_f: #if i is not a cat feature do binary search to find the minimum value mid such that changing feature i value of x to mid will result in target outcome t and a plausible explanation z
-            while start <= end: #binary search
-                tempdf = x.copy()
-                mid = start + (end-start)/2
-                tempdf.loc[:,i] = mid
-                if f.predict(tempdf)[0] == t and check_plausability(x,tempdf,X_train) == 1: #plausability through outlier detection algorithm LOF (to implement)
-                    z = tempdf
-                    end = mid - step[i] # try to make feature value smaller
-                else:
-                    start = mid + step[i] # too small, make feature value larger
-        else: #if i is categorical
-            z = x
-            z.loc[:,i] = (1-end) #set feature i as the reverse value (check if this works with one-hot encoding)
-            if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
+    for i in p_cat: #deze for loop eerst betekend dat cat sws verandert wordt
+        z = x.copy()
+        z.loc[:,i] = p_cat[i].value() #z.loc[:,i] is select all rows of column with name i #cat zijn niet one-hot encoded hier, dus x moet niet one-hot zijn en model er ook niet op getraind zijn
+        # kan bovenstaande ook conditioneren op onderstaande, anders niet veranderen
+        if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
                 return z
-    return z # if binary search for numerical feature does not succeed, returns None (no CF)
+    for i in p_num:
+        z = None
+        start = i[0] #lower bound
+        end = i[1] #upper bound
+        while start <= end:
+            tempdf = x.copy()
+            mid = start + (end - start) / 2
+            tempdf.loc[:, i] = mid
+            if f.predict(tempdf)[0] == t and check_plausability(x, tempdf,
+                                                                X_train) == 1:  # plausability through outlier detection algorithm LOF (to implement)
+                z = tempdf
+                end = mid - step[i]  # try to make feature value smaller
+            else:
+                start = mid + step[i]  # too small, make feature value larger
+    return z
+
+# def SF(x,X_train,cat_f,p,f,t,step):
+#     """
+#     SF permutation doesnt use MI and subspace (so also no NN from KDTree)
+#     param x: instance to be explained with CF
+#     param X_train: NOT normalized X_train (see if this is practical, if not - edit check_plausability())
+#     param cat_f: categorical features
+#     param p: user defined constrained features
+#     param f: black box model
+#     param t: target outcome
+#     param step: steps in how to traverse p lower and upper bounds
+#     returns: z, a valid countefactual instance
+#     """
+#     for i in p: #go over each feature in user defined constrained features
+#         z = None
+#         start = p[i][0] #lower bound
+#         end = p[i][1] #upper bound
+#         if i not in cat_f: #if i is not a cat feature do binary search to find the minimum value mid such that changing feature i value of x to mid will result in target outcome t and a plausible explanation z
+#             while start <= end: #binary search
+#                 tempdf = x.copy()
+#                 mid = start + (end-start)/2
+#                 tempdf.loc[:,i] = mid
+#                 if f.predict(tempdf)[0] == t and check_plausability(x,tempdf,X_train) == 1: #plausability through outlier detection algorithm LOF (to implement)
+#                     z = tempdf
+#                     end = mid - step[i] # try to make feature value smaller
+#                 else:
+#                     start = mid + step[i] # too small, make feature value larger
+#         else: #if i is categorical
+#             z = x
+#             z.loc[:,i] = (1-end) #set feature i as the reverse value (check if this works with one-hot encoding)
+#             if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
+#                 return z
+#     return z # if binary search for numerical feature does not succeed, returns None (no CF)
 
 def DF(X, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
     for f_pair in mi_pair:
