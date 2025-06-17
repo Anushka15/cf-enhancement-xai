@@ -18,11 +18,26 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
     print(x)
     for i in p_cat: #deze for loop eerst betekend dat cat sws verandert wordt
         z = x.copy()
-        z.loc[:,i] = p_cat[i].value() #z.loc[:,i] is select all rows of column with name i #cat zijn niet one-hot encoded hier, dus x moet niet one-hot zijn en model er ook niet op getraind zijn
+        #z.loc[:,i] = p_cat[i].value() #z.loc[:,i] is select all rows of column with name i #cat zijn niet one-hot encoded hier, dus x moet niet one-hot zijn en model er ook niet op getraind zijn
+
+        # Find all one-hot columns for feature i
+        relevant_columns = [col for col in X_train.columns if col.startswith(i + "_")]
+
+        # Set all related one-hot features to 0
+        z.loc[:, relevant_columns] = 0
+
+        # Set the specific desired one-hot feature to 1
+        target_col = f"{i}_{p_cat[i]}"
+        if target_col in z.columns:
+            z.loc[:, target_col] = 1
+        else:
+            print(f"Warning: {target_col} not found in columns.")
+
         # kan bovenstaande ook conditioneren op onderstaande, anders niet veranderen
         if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
                 return z
     for i in p_num:
+        print("goes in numerical, no CF based on cat found")
         z = None
         start = i[0] #lower bound
         end = i[1] #upper bound
