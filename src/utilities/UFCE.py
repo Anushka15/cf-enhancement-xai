@@ -36,7 +36,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
         # kan bovenstaande ook conditioneren op onderstaande, anders niet veranderen
         #if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
         proba = f.predict_proba(z)[0][1]
-        print(f"prediction with cat {target_col}: class={f.predict(z)[0]}, prob={proba:.4f}")
+        print(f"prediction with cat {target_col}: class={type(f.predict(z)[0])}, prob={proba:.4f}")
         if int(f.predict(z)[0]) == int(t):
                 return z
     for i in p_num:
