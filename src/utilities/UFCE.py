@@ -41,7 +41,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
                 return z
     for i in p_num:
         print("goes in numerical, no CF based on cat found")
-        z = None
+        z_s = []
         start, end = p_num[i]
         print("start: ",start)
         print("end: ", end)
@@ -51,13 +51,14 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
             tempdf.loc[:, i] = mid
             proba = f.predict_proba(tempdf)[0][1]
             print(f"prediction with changed {p_num[i]}: class={f.predict(tempdf)[0]}, prob={proba:.4f}")
-            if f.predict(tempdf)[0] == t and check_plausability(x, tempdf,
-                                                                X_train) == 1:
-                z = tempdf
+            # if f.predict(tempdf)[0] == t and check_plausability(x, tempdf,
+            #                                                     X_train) == 1:
+            if f.predict(tempdf)[0] == t:
+                z_s.append(tempdf)
                 end = mid - step[i]  # try to make feature value smaller
             else:
                 start = mid + step[i]  # too small, make feature value larger
-    return z
+    return z_s # give list for post-hoc filtering # or return last item of list, since this has the smallest change from binary search? # i think binary search is minimizing the feature value, not nessecarily the minimal change to x, this can also be a critique point
 
 # def SF(x,X_train,cat_f,p,f,t,step):
 #     """
@@ -90,7 +91,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
 #             z.loc[:,i] = (1-end) #set feature i as the reverse value (check if this works with one-hot encoding)
 #             if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
 #                 return z
-#     return z # if binary search for numerical feature does not succeed, returns None (no CF)
+#     return z # if binary search for numerical feature does not succeed, returns None (no CF) #this is likely another fault in the algorithm from the paper, because it keeps looking, which has this risk of overwriting for numerical features
 
 def DF(X, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
     for f_pair in mi_pair:
