@@ -132,7 +132,19 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 start = subspace[i][0] #if cat, then only has 1 value
                 #end = subspace[i][1]
                 h,mse,msse = regressor(df, j)
-                z.loc[:, i] = start
+                # Find all one-hot columns for feature i
+                relevant_columns = [col for col in x.columns if col.startswith(i + "_")]
+
+                # Set all related one-hot features to 0
+                z.loc[:, relevant_columns] = 0
+
+                # Set the specific desired one-hot feature to 1
+                target_col = f"{i}_{start}"
+                if target_col in z.columns:
+                    z.loc[:, target_col] = True
+                else:
+                    print(f"all columns are 0 for this category, as it is the reference feature value")
+                #z.loc[:, i] = start
                 z_noj = z.loc[:, z.columns != j]
                 new_j = h.predict(z_noj)
                 z.loc[:, j] = new_j
@@ -173,7 +185,19 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 start = subspace[i][0] #if cat, then only has 1 value
                 #end = subspace[i][1]
                 g,acc = classifier(df, j)
-                z.loc[:, i] = start
+                #z.loc[:, i] = start
+                # Find all one-hot columns for feature i
+                relevant_columns = [col for col in x.columns if col.startswith(i + "_")]
+
+                # Set all related one-hot features to 0
+                z.loc[:, relevant_columns] = 0
+
+                # Set the specific desired one-hot feature to 1
+                target_col = f"{i}_{start}"
+                if target_col in z.columns:
+                    z.loc[:, target_col] = True
+                else:
+                    print(f"all columns are 0 for this category, as it is the reference feature value")
                 z_noj = z.loc[:, z.columns != j]
                 new_j = g.predict(z_noj)
                 z.loc[:, j] = new_j
