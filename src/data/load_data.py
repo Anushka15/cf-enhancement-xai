@@ -75,3 +75,33 @@ def preprocess_only_numerical_features(X_train, X_test,datasetdf, numeric_column
     datasetdf[numeric_columns] = scaler.transform(datasetdf[numeric_columns])
 
     return X_train, X_test, datasetdf
+
+def preprocess_bank(df):
+    """
+    Preprocessing identical to how the authors do it, for a fair comparison
+    """
+    """
+    :param bankloan: bank dataframe
+    :return:
+    """
+    features = ['Income', 'Family', 'CCAvg', 'Education', 'Mortgage',
+                'SecuritiesAccount', 'CDAccount', 'Online', 'CreditCard']
+    catf = ['SecuritiesAccount', 'CDAccount', 'Online', 'CreditCard']
+    numf = ['Income', 'Family', 'CCAvg', 'Education', 'Mortgage']
+    p = {'Income': 40, 'CCAvg': 1.5, 'Family': 3, 'Education': 2, 'Mortgage': 80, 'CDAccount': 1, 'Online': 1,
+          'SecuritiesAccount': 1, 'CreditCard': 1} #uf is p
+    step = {'Income': 1, 'CCAvg': 0.1, 'Family': 1, 'Education': 1, 'Mortgage': 1, 'CDAccount': 1, 'Online': 1,
+         'SecuritiesAccount': 1, 'CreditCard': 1}
+    # uf  = getMCSvalues()
+    f2change = ['Income', 'CCAvg', 'Mortgage','CDAccount', 'Online']
+    outcome_label = 'Personal Loan'
+    desired_outcome = 1.0
+    nbr_features = 9
+    protectf = []
+
+    # desired space
+    data_lab1 = pd.DataFrame()
+    data_lab1 = df[df["Personal Loan"] == 1]
+    data_lab0 = df[df["Personal Loan"] == 0]
+    data_lab1 = data_lab1.drop(['Personal Loan'], axis=1)
+    return features, catf, numf, uf, f2change, outcome_label, desired_outcome, nbr_features, protectf, data_lab0, data_lab1
