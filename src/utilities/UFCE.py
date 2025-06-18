@@ -58,7 +58,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
             print(f"prediction with changed {p_num[i]}: class={f.predict(tempdf)[0]}, prob={proba:.4f}")
             # if f.predict(tempdf)[0] == t and check_plausability(x, tempdf,
             #                                                     X_train) == 1:
-            if int(f.predict(tempdf)[0]) == int(t) and check_plausability(x,tempdf,X_train):
+            if int(f.predict(tempdf)[0]) == int(t) and check_plausability(x,tempdf,X_train) == 1:
                 z_s.append(tempdf)
                 end = mid - step[i]  # try to make feature value smaller
             else:
@@ -98,7 +98,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
 #                 return z
 #     return z # if binary search for numerical feature does not succeed, returns None (no CF) #this is likely another fault in the algorithm from the paper, because it keeps looking, which has this risk of overwriting for numerical features
 
-def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
+def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
     # does not use p-map
     for f_pair in mi_pair:
         i = f_pair[0]
@@ -136,7 +136,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                     new_j = h.predict(z_noj)  # or g.predict depending on context
                     z.loc[:, j] = new_j
 
-                    if f.predict(z) == t:
+                    if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
                         return z
                     else:
                         traverse_space.pop(mid_idx)  # remove the tried value
@@ -161,7 +161,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 z_noj = z.loc[:, z.columns != j]
                 new_j = h.predict(z_noj)
                 z.loc[:, j] = new_j
-                if f.predict(z) == t:  # and check_plausability(x,z,X) == 1:
+                if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
                     return z
                 else:
                     print('can not find CF for this cat value i, going to next feature pair')
@@ -197,7 +197,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                     new_j = g.predict(z_noj)  # or g.predict depending on context
                     z.loc[:, j] = new_j
 
-                    if f.predict(z) == t:
+                    if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
                         return z
                     else:
                         traverse_space.pop(mid_idx)  # remove the tried value
@@ -227,7 +227,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 z_noj = z.loc[:, z.columns != j]
                 new_j = g.predict(z_noj)
                 z.loc[:, j] = new_j
-                if f.predict(z) == t:  # and check_plausability(x,z,X) == 1:
+                if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
                     return z
                 else:
                     print('can not find CF for this cat value i, going to next feature pair')
