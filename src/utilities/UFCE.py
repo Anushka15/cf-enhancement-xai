@@ -1,5 +1,5 @@
 import random
-
+import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
@@ -110,7 +110,8 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 start = subspace[i][0]
                 end = subspace[i][1]
                 h = regressor(df,j)
-                traverse_space = sorted(random.uniform(start,end))
+                #traverse_space = sorted(random.uniform(start,end))
+                traverse_space = sorted([np.round(random.uniform(start, end), 2) for _ in range(20)]) # create distribution of 20 values
                 while len(traverse_space) > 0:
                     mid = start + (end-start)/2
                     z.loc[:,i] = traverse_space[mid]
@@ -142,7 +143,8 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 start = subspace[i][0]
                 end = subspace[i][1]
                 g = classifier(df,j)
-                traverse_space = sorted(random.uniform(start,end))
+                #traverse_space = sorted(random.uniform(start,end))
+                traverse_space = sorted([np.round(random.uniform(start, end), 2) for _ in range(20)])  # create distribution of 20 values
                 while len(traverse_space) > 0:
                     mid = start + (end-start)/2
                     z.loc[:,i] = traverse_space[mid]
