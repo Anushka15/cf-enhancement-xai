@@ -9,17 +9,17 @@ def check_plausability(x,z,X):
     param x: test instance you want to explain with CF
     param X: NOT normalized training data (see if this is practical, if not- remove scaler)
     param z: CF of x
-    param X: training data
     returns: 1 or 0, representing if CF is plausible or not
     """
-    scaler = StandardScaler()
-    scaler = scaler.fit(X)
-    n_X = scaler.transform(X)
-    n_x = scaler.transform(x)
-    n_z = scaler.transform(z)
+    # scaler = StandardScaler()
+    # scaler = scaler.fit(X)
+    # n_X = scaler.transform(X)
+    # n_x = scaler.transform(x)
+    # n_z = scaler.transform(z)
+    X_tot = pd.concat([X, pd.DataFrame([x])], ignore_index=True)
 
     clf = LocalOutlierFactor(n_neighbors=100, novelty=True)
-    clf.fit(n_X)
-    no_outlier = clf.predict(n_z)
+    clf.fit(X_tot)
+    no_outlier = clf.predict(z)
     return no_outlier # 1 if no outlier, else 0
 
