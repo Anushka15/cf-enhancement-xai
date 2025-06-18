@@ -113,8 +113,10 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 #traverse_space = sorted(random.uniform(start,end))
                 traverse_space = sorted([np.round(random.uniform(start, end), 2) for _ in range(20)]) # create distribution of 20 values
                 while len(traverse_space) > 0:
-                    mid = start + (end-start)/2
-                    z.loc[:,i] = traverse_space[mid]
+                    #mid = start + (end-start)/2
+                    #z.loc[:,i] = traverse_space[mid]
+                    mid_idx = len(traverse_space) // 2  # integer index of middle value
+                    z.loc[:, i] = traverse_space[mid_idx]
                     #z=z.loc[:,z.columns != j]
                     new_j = h(z)
                     z.loc[:,j] = new_j
@@ -122,7 +124,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                         return z
                     else:
                         try:
-                            del traverse_space[:mid] # make the space smaller
+                            del traverse_space[:mid_idx] # make the space smaller
                         except:
                             pass
 
@@ -146,8 +148,10 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 #traverse_space = sorted(random.uniform(start,end))
                 traverse_space = sorted([np.round(random.uniform(start, end), 2) for _ in range(20)])  # create distribution of 20 values
                 while len(traverse_space) > 0:
-                    mid = start + (end-start)/2
-                    z.loc[:,i] = traverse_space[mid]
+                    #mid = start + (end-start)/2
+                    #z.loc[:,i] = traverse_space[mid]
+                    mid_idx = len(traverse_space) // 2  # integer index of middle value
+                    z.loc[:, i] = traverse_space[mid_idx]
                     #z=z.loc[:,z.columns != j]
                     new_j = g(z)
                     z.loc[:,j] = new_j
@@ -155,7 +159,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                         return z
                     else:
                         try:
-                            del traverse_space[:mid] # make the space smaller
+                            del traverse_space[:mid_idx] # make the space smaller
                         except:
                             pass
 
