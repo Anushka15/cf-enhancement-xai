@@ -1,6 +1,11 @@
 import random
 
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
 from src.utilities.plausability import check_plausability
+from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
 
 def SF(x,X_train,p_num,p_cat,f,t,step):
     """
@@ -93,7 +98,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
 #                 return z
 #     return z # if binary search for numerical feature does not succeed, returns None (no CF) #this is likely another fault in the algorithm from the paper, because it keeps looking, which has this risk of overwriting for numerical features
 
-def DF(X_train, y_train x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
+def DF(df, y_train, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
     # does not use p-map
     for f_pair in mi_pair:
         i = f_pair[0]
@@ -103,19 +108,15 @@ def DF(X_train, y_train x, subspace, mi_pair, cat_f, num_f, features, protect_f,
             if (i in num_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0]
                 end = subspace[i][1]
-                h = regressor(X,i,j)
+                h = regressor(df,i,j)
                 traverse_space = sorted(random.uniform(start,end))
                 while len(traverse_space) > 0:
                     mid = start + (end-start)/2
                     z.loc[:,i] = traverse_space[mid]
-                    z=z.loc[:,z.columns != j]
-                    if j in num_f:
-                        new_j = h(z)
-                        z.loc[:,j] = new_j
-                    else:
-                        new_j=g(z)
-                        z.loc[:,j] = new_j
-                    if f(z) == t and check_plausability(x,z,X) == 1:
+                    #z=z.loc[:,z.columns != j]
+                    new_j = h(z)
+                    z.loc[:,j] = new_j
+                    if f(z) == t: #and check_plausability(x,z,X) == 1:
                         return z
                     else:
                         try:
@@ -124,15 +125,45 @@ def DF(X_train, y_train x, subspace, mi_pair, cat_f, num_f, features, protect_f,
                             pass
 
             elif (i in cat_f and j in num_f) and (i not in protect_f and j not in protect_f):
-                h = regressor(X,i,j)
-                g = classifier(X,i,j)
+                start = subspace[i][0] #if cat, then only has 1 value
+                #end = subspace[i][1]
+                h = regressor(df, i, j)
+                while len(traverse_space) > 0:
+                    mid = start + (end - start) / 2
+                    z.loc[:, i] = traverse_space[mid]
+                    # z=z.loc[:,z.columns != j]
+                    new_j = h(z)
+                    z.loc[:, j] = new_j
+                    if f(z) == t:  # and check_plausability(x,z,X) == 1:
+                        return z
+                    else:
+                        print('can not find CF for this cat value i, going to next feature pair')
 
             elif (i in num_f and j in cat_f) and (i not in protect_f and j not in protect_f):
-                h = regressor(X,i,j)
-                g = classifier(X,i,j)
+                start = subspace[i][0]
+                end = subspace[i][1]
+                g = classifier(df, i, j)
+                traverse_space = sorted(random.uniform(start, end))
+                while len(traverse_space) > 0:
+                    mid = start + (end - start) / 2
+                    z.loc[:, i] = traverse_space[mid]
+                    z = z.loc[:, z.columns != j]
+                    if j in num_f:
+                        new_j = h(z)
+                        z.loc[:, j] = new_j
+                    else:
+                        new_j = g(z)
+                        z.loc[:, j] = new_j
+                    if f(z) == t and check_plausability(x, z, X) == 1:
+                        return z
+                    else:
+                        try:
+                            del traverse_space[:mid]  # make the space smaller
+                        except:
+                            pass
 
             elif (i in cat_f and j in cat_f) and (i not in protect_f and j not in protect_f):
-                g = classifier(X, i, j)
+                g = classifier(df, i, j)
                 z.loc[:,i] = subspace[i][1]
                 z.loc[:,j] = subspace[j][1]
                 if f(z) == t and check_plausability(x,z,X) == 1:
@@ -141,19 +172,20 @@ def DF(X_train, y_train x, subspace, mi_pair, cat_f, num_f, features, protect_f,
 
 #TF still needs to be done
 
-def regressor(X_train, Y_train f_ì, f_j):
+def regressor(df, f_j):
     # train regressor to predict feature j based on i from traverse space
     """
-    :param df: dataframe of data
-    :param f_independent: training space
-    :param f_dependent: feature whose value to predict
+    :param df: dataframe of all the data
+    :param f_j: the feature that we want to predict, the 'y'
+    note: 'class' is now also a independent feature
     :return:
     """
-    #X = np.array(df.loc[:, df.columns != f_dependent])
-    #y = np.array(df.loc[:, df.columns == f_dependent])
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.2, random_state=42)
+    X = np.array(df.loc[:, df.columns != f_j])
+    y = np.array(df.loc[:, df.columns == f_j])
+    print(y)
+    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=.2, random_state=42) # moet ook preprocessed? ja denk het wel om preprocessed waarden te voorspellen
     linear_reg = LinearRegression()
-    linear_reg.fit(X_train, y_train.ravel())
+    linear_reg.fit(X_train, y_train.ravel()) # .ravel() is
     y_pred = linear_reg.predict(X_test)
     from sklearn.metrics import mean_squared_error
     import math
@@ -161,8 +193,18 @@ def regressor(X_train, Y_train f_ì, f_j):
     msse = math.sqrt(mean_squared_error(y_test, y_pred))
     return linear_reg, mse, msse
 
-def classifier(X, f_i, f_j):
-    # train regressor to predict feature j based on i from traverse space
+def classifier(df, f_j):
+    # train classifier to predict feature j based on i from traverse space
+    X = np.array(df.loc[:, df.columns != f_j])
+    y = np.array(df.loc[:, df.columns == f_j])
+    print(y)
+    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=.2, random_state=42) # moet ook preprocessed? ja denk het wel om preprocessed waarden te voorspellen
+    log_reg = LogisticRegression(random_state=42)
+    log_reg.fit(X_train, y_train.ravel()) # .ravel() is
+    y_pred = log_reg.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    return log_reg, acc
+
 
 
 
