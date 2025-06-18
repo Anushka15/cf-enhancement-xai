@@ -42,20 +42,20 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
         # kan bovenstaande ook conditioneren op onderstaande, anders niet veranderen
         #if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
         proba = f.predict_proba(z)[0][1]
-        print(f"prediction with cat {target_col}: class={f.predict(z)[0]}, prob={proba:.4f}")
+        #print(f"prediction with cat {target_col}: class={f.predict(z)[0]}, prob={proba:.4f}")
         if int(f.predict(z)[0]) == int(t) and check_plausability(x,z,X_train) == 1:
                 return z
     for i in p_num:
-        print("goes in numerical, no CF based on cat found")
+        #print("goes in numerical, no CF based on cat found")
         start, end = p_num[i]
-        print("start: ",start)
-        print("end: ", end)
+        #print("start: ",start)
+        #print("end: ", end)
         while start <= end:
             tempdf = x.copy()
             mid = start + (end - start) / 2
             tempdf.loc[:, i] = mid
             proba = f.predict_proba(tempdf)[0][1]
-            print(f"prediction with changed {p_num[i]}: class={f.predict(tempdf)[0]}, prob={proba:.4f}")
+            #print(f"prediction with changed {p_num[i]}: class={f.predict(tempdf)[0]}, prob={proba:.4f}")
             # if f.predict(tempdf)[0] == t and check_plausability(x, tempdf,
             #                                                     X_train) == 1:
             if int(f.predict(tempdf)[0]) == int(t) and check_plausability(x,tempdf,X_train) == 1:

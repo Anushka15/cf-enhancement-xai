@@ -17,6 +17,14 @@ def check_plausability(x,z,X):
     # n_X = scaler.transform(X)
     # n_x = scaler.transform(x)
     # n_z = scaler.transform(z)
+    print("x:")
+    print(x)
+    print("z:")
+    print(z)
+    print("X:")
+    print(X.head())
+
+
     X_tot = pd.concat([X, x], ignore_index=True)
 
     clf = LocalOutlierFactor(n_neighbors=100, novelty=True)
