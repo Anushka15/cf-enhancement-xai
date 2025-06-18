@@ -66,3 +66,12 @@ def preprocess_data(X_train, X_test, datasetdf, numeric_columns):
     datasetdf[numeric_columns] = scaler.transform(datasetdf[numeric_columns])
 
     return X_train, X_test, datasetdf
+
+
+def preprocess_only_numerical_features(X_train, X_test,datasetdf, numeric_columns):
+    scaler = StandardScaler()
+    X_train[numeric_columns] = scaler.fit_transform(X_train[numeric_columns])
+    X_test[numeric_columns] = scaler.transform(X_test[numeric_columns])
+    datasetdf[numeric_columns] = scaler.transform(datasetdf[numeric_columns])
+
+    return X_train, X_test, datasetdf
