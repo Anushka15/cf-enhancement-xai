@@ -115,24 +115,49 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 while len(traverse_space) > 0:
                     #mid = start + (end-start)/2
                     #z.loc[:,i] = traverse_space[mid]
-                    mid_idx = len(traverse_space) // 2  # integer index of middle value
-                    z.loc[:, i] = traverse_space[mid_idx]
-                    z_noj=z.loc[:,z.columns != j]
-                    new_j = h.predict(z_noj)
-                    z.loc[:,j] = new_j
-                    if f.predict(z) == t: #and check_plausability(x,z,X) == 1:
+
+                    # mid_idx = len(traverse_space) // 2  # integer index of middle value
+                    # z.loc[:, i] = traverse_space[mid_idx]
+                    # z_noj=z.loc[:,z.columns != j]
+                    # new_j = h.predict(z_noj)
+                    # z.loc[:,j] = new_j
+                    # if f.predict(z) == t: #and check_plausability(x,z,X) == 1:
+                    #     return z
+                    # else:
+                    #     try:
+                    #         del traverse_space[:mid_idx] # make the space smaller
+                    #     except:
+                    #         pass
+
+                    mid_idx = len(traverse_space) // 2
+                    mid_val = traverse_space[mid_idx]
+                    z.loc[:, i] = mid_val
+                    z_noj = z.loc[:, z.columns != j]
+                    new_j = h.predict(z_noj)  # or g.predict depending on context
+                    z.loc[:, j] = new_j
+
+                    if f.predict(z) == t:
                         return z
                     else:
-                        try:
-                            del traverse_space[:mid_idx] # make the space smaller
-                        except:
-                            pass
+                        traverse_space.pop(mid_idx)  # remove the tried value
 
             elif (i in cat_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0] #if cat, then only has 1 value
                 #end = subspace[i][1]
                 h,mse,msse = regressor(df, j)
-                z.loc[:, i] = start
+                # Find all one-hot columns for feature i
+                relevant_columns = [col for col in x.columns if col.startswith(i + "_")]
+
+                # Set all related one-hot features to 0
+                z.loc[:, relevant_columns] = 0
+
+                # Set the specific desired one-hot feature to 1
+                target_col = f"{i}_{start}"
+                if target_col in z.columns:
+                    z.loc[:, target_col] = True
+                else:
+                    print(f"all columns are 0 for this category, as it is the reference feature value")
+                #z.loc[:, i] = start
                 z_noj = z.loc[:, z.columns != j]
                 new_j = h.predict(z_noj)
                 z.loc[:, j] = new_j
@@ -151,18 +176,31 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 while len(traverse_space) > 0:
                     #mid = start + (end-start)/2
                     #z.loc[:,i] = traverse_space[mid]
-                    mid_idx = len(traverse_space) // 2  # integer index of middle value
-                    z.loc[:, i] = traverse_space[mid_idx]
-                    z_noj=z.loc[:,z.columns != j]
-                    new_j = g.predict(z_noj)
-                    z.loc[:,j] = new_j
-                    if f.predict(z) == t: #and check_plausability(x,z,X) == 1:
+
+                    # mid_idx = len(traverse_space) // 2  # integer index of middle value
+                    # z.loc[:, i] = traverse_space[mid_idx]
+                    # z_noj=z.loc[:,z.columns != j]
+                    # new_j = g.predict(z_noj)
+                    # z.loc[:,j] = new_j
+                    # if f.predict(z) == t: #and check_plausability(x,z,X) == 1:
+                    #     return z
+                    # else:
+                    #     try:
+                    #         del traverse_space[:mid_idx] # make the space smaller
+                    #     except:
+                    #         pass
+
+                    mid_idx = len(traverse_space) // 2
+                    mid_val = traverse_space[mid_idx]
+                    z.loc[:, i] = mid_val
+                    z_noj = z.loc[:, z.columns != j]
+                    new_j = g.predict(z_noj)  # or g.predict depending on context
+                    z.loc[:, j] = new_j
+
+                    if f.predict(z) == t:
                         return z
                     else:
-                        try:
-                            del traverse_space[:mid_idx] # make the space smaller
-                        except:
-                            pass
+                        traverse_space.pop(mid_idx)  # remove the tried value
 
             elif (i in cat_f and j in cat_f) and (i not in protect_f and j not in protect_f):
                 # g = classifier(df, i, j) # I don't get why this implementation
@@ -173,7 +211,19 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 start = subspace[i][0] #if cat, then only has 1 value
                 #end = subspace[i][1]
                 g,acc = classifier(df, j)
-                z.loc[:, i] = start
+                #z.loc[:, i] = start
+                # Find all one-hot columns for feature i
+                relevant_columns = [col for col in x.columns if col.startswith(i + "_")]
+
+                # Set all related one-hot features to 0
+                z.loc[:, relevant_columns] = 0
+
+                # Set the specific desired one-hot feature to 1
+                target_col = f"{i}_{start}"
+                if target_col in z.columns:
+                    z.loc[:, target_col] = True
+                else:
+                    print(f"all columns are 0 for this category, as it is the reference feature value")
                 z_noj = z.loc[:, z.columns != j]
                 new_j = g.predict(z_noj)
                 z.loc[:, j] = new_j
