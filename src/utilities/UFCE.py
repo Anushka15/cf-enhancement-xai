@@ -93,7 +93,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
 #                 return z
 #     return z # if binary search for numerical feature does not succeed, returns None (no CF) #this is likely another fault in the algorithm from the paper, because it keeps looking, which has this risk of overwriting for numerical features
 
-def DF(X, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
+def DF(X_train, y_train x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
     # does not use p-map
     for f_pair in mi_pair:
         i = f_pair[0]
@@ -141,8 +141,25 @@ def DF(X, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
 
 #TF still needs to be done
 
-def regressor(X, f_ì, f_j):
+def regressor(X_train, Y_train f_ì, f_j):
     # train regressor to predict feature j based on i from traverse space
+    """
+    :param df: dataframe of data
+    :param f_independent: training space
+    :param f_dependent: feature whose value to predict
+    :return:
+    """
+    #X = np.array(df.loc[:, df.columns != f_dependent])
+    #y = np.array(df.loc[:, df.columns == f_dependent])
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.2, random_state=42)
+    linear_reg = LinearRegression()
+    linear_reg.fit(X_train, y_train.ravel())
+    y_pred = linear_reg.predict(X_test)
+    from sklearn.metrics import mean_squared_error
+    import math
+    mse = mean_squared_error(y_test, y_pred)
+    msse = math.sqrt(mean_squared_error(y_test, y_pred))
+    return linear_reg, mse, msse
 
 def classifier(X, f_i, f_j):
     # train regressor to predict feature j based on i from traverse space
