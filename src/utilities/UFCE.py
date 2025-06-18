@@ -190,10 +190,11 @@ def regressor(df, f_j):
     """
     :param df: dataframe of all the data
     :param f_j: the feature that we want to predict, the 'y'
-    note: 'class' is now also a independent feature
+    note: 'class' is now also a independent feature # update: Removed class
     :return:
     """
-    X = np.array(df.loc[:, df.columns != f_j])
+    #X = np.array(df.loc[:, df.columns != f_j])
+    X = np.array(df.loc[:, ~df.columns.isin([f_j, 'class'])])
     y = np.array(df.loc[:, df.columns == f_j])
     print(y)
     X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=.2, random_state=42) # moet ook preprocessed? ja denk het wel om preprocessed waarden te voorspellen
@@ -208,7 +209,8 @@ def regressor(df, f_j):
 
 def classifier(df, f_j):
     # train classifier to predict feature j based on i from traverse space
-    X = np.array(df.loc[:, df.columns != f_j])
+    #X = np.array(df.loc[:, df.columns != f_j])
+    X = np.array(df.loc[:, ~df.columns.isin([f_j, 'class'])])
     y = np.array(df.loc[:, df.columns == f_j])
     print(y)
     X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=.2, random_state=42) # moet ook preprocessed? ja denk het wel om preprocessed waarden te voorspellen
