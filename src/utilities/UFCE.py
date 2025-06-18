@@ -120,7 +120,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                     z_noj=z.loc[:,z.columns != j]
                     new_j = h.predict(z_noj)
                     z.loc[:,j] = new_j
-                    if f(z) == t: #and check_plausability(x,z,X) == 1:
+                    if f.predict(z) == t: #and check_plausability(x,z,X) == 1:
                         return z
                     else:
                         try:
@@ -136,7 +136,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 z_noj = z.loc[:, z.columns != j]
                 new_j = h.predict(z_noj)
                 z.loc[:, j] = new_j
-                if f(z) == t:  # and check_plausability(x,z,X) == 1:
+                if f.predict(z) == t:  # and check_plausability(x,z,X) == 1:
                     return z
                 else:
                     print('can not find CF for this cat value i, going to next feature pair')
@@ -156,7 +156,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                     z_noj=z.loc[:,z.columns != j]
                     new_j = g.predict(z_noj)
                     z.loc[:,j] = new_j
-                    if f(z) == t: #and check_plausability(x,z,X) == 1:
+                    if f.predict(z) == t: #and check_plausability(x,z,X) == 1:
                         return z
                     else:
                         try:
@@ -177,7 +177,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 z_noj = z.loc[:, z.columns != j]
                 new_j = g.predict(z_noj)
                 z.loc[:, j] = new_j
-                if f(z) == t:  # and check_plausability(x,z,X) == 1:
+                if f.predict(z) == t:  # and check_plausability(x,z,X) == 1:
                     return z
                 else:
                     print('can not find CF for this cat value i, going to next feature pair')
