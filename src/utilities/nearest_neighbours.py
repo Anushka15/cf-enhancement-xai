@@ -40,7 +40,7 @@ def intervals(nn, p, f2change, x):
             subspace[i] = [lower, upper]
     return subspace
 
-def intervals2(nn,p_cat,p_num,f2change,x):
+def intervals2(nn,p_num,p_cat,f2change,x):
     subspace = {}
     for i in p_num:
         lower = p_num[i][0]
@@ -54,5 +54,6 @@ def intervals2(nn,p_cat,p_num,f2change,x):
         else:
             subspace[i] = [lower, upper]
     for j in p_cat:
-        subspace[j] = p_cat[j][0]
+        subspace[j] = p_cat[j]
         print('subspace cat val.: ', subspace[j])
+    return subspace

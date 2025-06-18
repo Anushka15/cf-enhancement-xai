@@ -98,7 +98,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
 #                 return z
 #     return z # if binary search for numerical feature does not succeed, returns None (no CF) #this is likely another fault in the algorithm from the paper, because it keeps looking, which has this risk of overwriting for numerical features
 
-def DF(df, y_train, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
+def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
     # does not use p-map
     for f_pair in mi_pair:
         i = f_pair[0]
@@ -109,7 +109,7 @@ def DF(df, y_train, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
             if (i in num_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0]
                 end = subspace[i][1]
-                h = regressor(df,i,j)
+                h = regressor(df,j)
                 traverse_space = sorted(random.uniform(start,end))
                 while len(traverse_space) > 0:
                     mid = start + (end-start)/2
@@ -128,7 +128,7 @@ def DF(df, y_train, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
             elif (i in cat_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0] #if cat, then only has 1 value
                 #end = subspace[i][1]
-                h = regressor(df, i, j)
+                h = regressor(df, j)
                 z.loc[:, i] = start
                 new_j = h(z)
                 z.loc[:, j] = new_j
@@ -141,7 +141,7 @@ def DF(df, y_train, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
             elif (i in num_f and j in cat_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0]
                 end = subspace[i][1]
-                g = classifier(df,i,j)
+                g = classifier(df,j)
                 traverse_space = sorted(random.uniform(start,end))
                 while len(traverse_space) > 0:
                     mid = start + (end-start)/2
@@ -165,7 +165,7 @@ def DF(df, y_train, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 #     return z
                 start = subspace[i][0] #if cat, then only has 1 value
                 #end = subspace[i][1]
-                g = classifier(df, i, j)
+                g = classifier(df, j)
                 z.loc[:, i] = start
                 new_j = g(z)
                 z.loc[:, j] = new_j
