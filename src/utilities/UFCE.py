@@ -115,18 +115,31 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 while len(traverse_space) > 0:
                     #mid = start + (end-start)/2
                     #z.loc[:,i] = traverse_space[mid]
-                    mid_idx = len(traverse_space) // 2  # integer index of middle value
-                    z.loc[:, i] = traverse_space[mid_idx]
-                    z_noj=z.loc[:,z.columns != j]
-                    new_j = h.predict(z_noj)
-                    z.loc[:,j] = new_j
-                    if f.predict(z) == t: #and check_plausability(x,z,X) == 1:
+
+                    # mid_idx = len(traverse_space) // 2  # integer index of middle value
+                    # z.loc[:, i] = traverse_space[mid_idx]
+                    # z_noj=z.loc[:,z.columns != j]
+                    # new_j = h.predict(z_noj)
+                    # z.loc[:,j] = new_j
+                    # if f.predict(z) == t: #and check_plausability(x,z,X) == 1:
+                    #     return z
+                    # else:
+                    #     try:
+                    #         del traverse_space[:mid_idx] # make the space smaller
+                    #     except:
+                    #         pass
+
+                    mid_idx = len(traverse_space) // 2
+                    mid_val = traverse_space[mid_idx]
+                    z.loc[:, i] = mid_val
+                    z_noj = z.loc[:, z.columns != j]
+                    new_j = h.predict(z_noj)  # or g.predict depending on context
+                    z.loc[:, j] = new_j
+
+                    if f.predict(z) == t:
                         return z
                     else:
-                        try:
-                            del traverse_space[:mid_idx] # make the space smaller
-                        except:
-                            pass
+                        traverse_space.pop(mid_idx)  # remove the tried value
 
             elif (i in cat_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0] #if cat, then only has 1 value
@@ -163,18 +176,31 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 while len(traverse_space) > 0:
                     #mid = start + (end-start)/2
                     #z.loc[:,i] = traverse_space[mid]
-                    mid_idx = len(traverse_space) // 2  # integer index of middle value
-                    z.loc[:, i] = traverse_space[mid_idx]
-                    z_noj=z.loc[:,z.columns != j]
-                    new_j = g.predict(z_noj)
-                    z.loc[:,j] = new_j
-                    if f.predict(z) == t: #and check_plausability(x,z,X) == 1:
+
+                    # mid_idx = len(traverse_space) // 2  # integer index of middle value
+                    # z.loc[:, i] = traverse_space[mid_idx]
+                    # z_noj=z.loc[:,z.columns != j]
+                    # new_j = g.predict(z_noj)
+                    # z.loc[:,j] = new_j
+                    # if f.predict(z) == t: #and check_plausability(x,z,X) == 1:
+                    #     return z
+                    # else:
+                    #     try:
+                    #         del traverse_space[:mid_idx] # make the space smaller
+                    #     except:
+                    #         pass
+
+                    mid_idx = len(traverse_space) // 2
+                    mid_val = traverse_space[mid_idx]
+                    z.loc[:, i] = mid_val
+                    z_noj = z.loc[:, z.columns != j]
+                    new_j = g.predict(z_noj)  # or g.predict depending on context
+                    z.loc[:, j] = new_j
+
+                    if f.predict(z) == t:
                         return z
                     else:
-                        try:
-                            del traverse_space[:mid_idx] # make the space smaller
-                        except:
-                            pass
+                        traverse_space.pop(mid_idx)  # remove the tried value
 
             elif (i in cat_f and j in cat_f) and (i not in protect_f and j not in protect_f):
                 # g = classifier(df, i, j) # I don't get why this implementation
