@@ -104,6 +104,7 @@ def DF(df, y_train, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
         i = f_pair[0]
         j = f_pair[1] # i is first feature, j is second feature from tuple
         z = x.copy() # initialize CF
+        print("going to next feature pair")
         if i in subspace and j in subspace:
             if (i in num_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0]
@@ -128,46 +129,50 @@ def DF(df, y_train, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 start = subspace[i][0] #if cat, then only has 1 value
                 #end = subspace[i][1]
                 h = regressor(df, i, j)
-                while len(traverse_space) > 0:
-                    mid = start + (end - start) / 2
-                    z.loc[:, i] = traverse_space[mid]
-                    # z=z.loc[:,z.columns != j]
-                    new_j = h(z)
-                    z.loc[:, j] = new_j
-                    if f(z) == t:  # and check_plausability(x,z,X) == 1:
-                        return z
-                    else:
-                        print('can not find CF for this cat value i, going to next feature pair')
+                z.loc[:, i] = start
+                new_j = h(z)
+                z.loc[:, j] = new_j
+                if f(z) == t:  # and check_plausability(x,z,X) == 1:
+                    return z
+                else:
+                    print('can not find CF for this cat value i, going to next feature pair')
+
 
             elif (i in num_f and j in cat_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0]
                 end = subspace[i][1]
-                g = classifier(df, i, j)
-                traverse_space = sorted(random.uniform(start, end))
+                g = classifier(df,i,j)
+                traverse_space = sorted(random.uniform(start,end))
                 while len(traverse_space) > 0:
-                    mid = start + (end - start) / 2
-                    z.loc[:, i] = traverse_space[mid]
-                    z = z.loc[:, z.columns != j]
-                    if j in num_f:
-                        new_j = h(z)
-                        z.loc[:, j] = new_j
-                    else:
-                        new_j = g(z)
-                        z.loc[:, j] = new_j
-                    if f(z) == t and check_plausability(x, z, X) == 1:
+                    mid = start + (end-start)/2
+                    z.loc[:,i] = traverse_space[mid]
+                    #z=z.loc[:,z.columns != j]
+                    new_j = g(z)
+                    z.loc[:,j] = new_j
+                    if f(z) == t: #and check_plausability(x,z,X) == 1:
                         return z
                     else:
                         try:
-                            del traverse_space[:mid]  # make the space smaller
+                            del traverse_space[:mid] # make the space smaller
                         except:
                             pass
 
             elif (i in cat_f and j in cat_f) and (i not in protect_f and j not in protect_f):
+                # g = classifier(df, i, j) # I don't get why this implementation
+                # z.loc[:,i] = subspace[i][1]
+                # z.loc[:,j] = subspace[j][1]
+                # if f(z) == t and check_plausability(x,z,X) == 1:
+                #     return z
+                start = subspace[i][0] #if cat, then only has 1 value
+                #end = subspace[i][1]
                 g = classifier(df, i, j)
-                z.loc[:,i] = subspace[i][1]
-                z.loc[:,j] = subspace[j][1]
-                if f(z) == t and check_plausability(x,z,X) == 1:
+                z.loc[:, i] = start
+                new_j = g(z)
+                z.loc[:, j] = new_j
+                if f(z) == t:  # and check_plausability(x,z,X) == 1:
                     return z
+                else:
+                    print('can not find CF for this cat value i, going to next feature pair')
     return z
 
 #TF still needs to be done
