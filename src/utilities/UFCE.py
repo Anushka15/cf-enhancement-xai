@@ -109,7 +109,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
             if (i in num_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0]
                 end = subspace[i][1]
-                h = regressor(df,j)
+                h,mse,msse = regressor(df,j)
                 #traverse_space = sorted(random.uniform(start,end))
                 traverse_space = sorted([np.round(random.uniform(start, end), 2) for _ in range(20)]) # create distribution of 20 values
                 while len(traverse_space) > 0:
@@ -117,8 +117,8 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                     #z.loc[:,i] = traverse_space[mid]
                     mid_idx = len(traverse_space) // 2  # integer index of middle value
                     z.loc[:, i] = traverse_space[mid_idx]
-                    #z=z.loc[:,z.columns != j]
-                    new_j = h(z)
+                    z_noj=z.loc[:,z.columns != j]
+                    new_j = h.predict(z_noj)
                     z.loc[:,j] = new_j
                     if f(z) == t: #and check_plausability(x,z,X) == 1:
                         return z
@@ -131,9 +131,10 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
             elif (i in cat_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0] #if cat, then only has 1 value
                 #end = subspace[i][1]
-                h = regressor(df, j)
+                h,mse,msse = regressor(df, j)
                 z.loc[:, i] = start
-                new_j = h(z)
+                z_noj = z.loc[:, z.columns != j]
+                new_j = h.predict(z_noj)
                 z.loc[:, j] = new_j
                 if f(z) == t:  # and check_plausability(x,z,X) == 1:
                     return z
@@ -144,7 +145,7 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
             elif (i in num_f and j in cat_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0]
                 end = subspace[i][1]
-                g = classifier(df,j)
+                g,acc = classifier(df,j)
                 #traverse_space = sorted(random.uniform(start,end))
                 traverse_space = sorted([np.round(random.uniform(start, end), 2) for _ in range(20)])  # create distribution of 20 values
                 while len(traverse_space) > 0:
@@ -152,8 +153,8 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                     #z.loc[:,i] = traverse_space[mid]
                     mid_idx = len(traverse_space) // 2  # integer index of middle value
                     z.loc[:, i] = traverse_space[mid_idx]
-                    #z=z.loc[:,z.columns != j]
-                    new_j = g(z)
+                    z_noj=z.loc[:,z.columns != j]
+                    new_j = g.predict(z_noj)
                     z.loc[:,j] = new_j
                     if f(z) == t: #and check_plausability(x,z,X) == 1:
                         return z
@@ -171,9 +172,10 @@ def DF(df, x, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
                 #     return z
                 start = subspace[i][0] #if cat, then only has 1 value
                 #end = subspace[i][1]
-                g = classifier(df, j)
+                g,acc = classifier(df, j)
                 z.loc[:, i] = start
-                new_j = g(z)
+                z_noj = z.loc[:, z.columns != j]
+                new_j = g.predict(z_noj)
                 z.loc[:, j] = new_j
                 if f(z) == t:  # and check_plausability(x,z,X) == 1:
                     return z
