@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import StandardScaler
 
@@ -7,7 +8,7 @@ def check_plausability(x,z,X):
     """
     Check if CF is plausible based on Local Outlier Factor (LOF) Algorithm
     param x: test instance you want to explain with CF
-    param X: NOT normalized training data (see if this is practical, if not- remove scaler)
+    param X: NOT normalized training data (see if this is practical, if not- remove scaler) # now it gets normalized
     param z: CF of x
     returns: 1 or 0, representing if CF is plausible or not
     """
