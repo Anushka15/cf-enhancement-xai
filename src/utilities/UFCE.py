@@ -99,6 +99,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
 #     return z # if binary search for numerical feature does not succeed, returns None (no CF) #this is likely another fault in the algorithm from the paper, because it keeps looking, which has this risk of overwriting for numerical features
 
 def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
+    potential_CFs = []
     # does not use p-map
     for f_pair in mi_pair:
         i = f_pair[0]
@@ -137,7 +138,8 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                     z.loc[:, j] = new_j
 
                     if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
-                        return z
+                        #return z
+                        potential_CFs.append(z)
                     else:
                         traverse_space.pop(mid_idx)  # remove the tried value
 
@@ -162,7 +164,8 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 new_j = h.predict(z_noj)
                 z.loc[:, j] = new_j
                 if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
-                    return z
+                    #return z
+                    potential_CFs.append(z)
                 else:
                     print('can not find CF for this cat value i, going to next feature pair')
 
@@ -198,7 +201,8 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                     z.loc[:, j] = new_j
 
                     if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
-                        return z
+                        #return z
+                        potential_CFs.append(z)
                     else:
                         traverse_space.pop(mid_idx)  # remove the tried value
 
@@ -228,10 +232,12 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 new_j = g.predict(z_noj)
                 z.loc[:, j] = new_j
                 if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
-                    return z
+                    #return z
+                    potential_CFs.append(z)
                 else:
                     print('can not find CF for this cat value i, going to next feature pair')
-    return z
+    #return z
+    return potential_CFs.append(z)
 
 #TF still needs to be done
 
