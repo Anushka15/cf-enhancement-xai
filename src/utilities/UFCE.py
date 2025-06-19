@@ -245,6 +245,7 @@ def regressor(df, f_j):
     """
     #X = np.array(df.loc[:, df.columns != f_j])
     X = np.array(df.loc[:, ~df.columns.isin([f_j, 'class'])])
+    X = np.array(df.loc[:, ~df.columns.isin([f_j, 'Personal Loan'])])
     y = np.array(df.loc[:, df.columns == f_j])
     print(y)
     X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=.2, random_state=42) # moet ook preprocessed? ja denk het wel om preprocessed waarden te voorspellen
