@@ -137,12 +137,12 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                     new_j = h.predict(z_noj)  # or g.predict depending on context
                     z.loc[:, j] = new_j
 
-                    if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
+                    if f.predict(z) == t: #and check_plausability(x,z,X_train) == 1:
                         #return z
                         potential_CFs.append(z)
                     else:
-                        #traverse_space.pop(mid_idx)  # remove the tried value
-                        traverse_space = traverse_space[:mid_idx] if f.predict(z) != t else traverse_space[mid_idx + 1:]
+                        traverse_space.pop(mid_idx)  # remove the tried value
+                        #traverse_space = traverse_space[:mid_idx] if f.predict(z) != t else traverse_space[mid_idx + 1:]
 
             elif (i in cat_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0] #if cat, then only has 1 value
@@ -164,7 +164,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 z_noj = z.loc[:, z.columns != j]
                 new_j = h.predict(z_noj)
                 z.loc[:, j] = new_j
-                if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
+                if f.predict(z) == t: #and check_plausability(x,z,X_train) == 1:
                     #return z
                     potential_CFs.append(z)
                 else:
@@ -201,12 +201,12 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                     new_j = g.predict(z_noj)  # or g.predict depending on context
                     z.loc[:, j] = new_j
 
-                    if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
+                    if f.predict(z) == t: #and check_plausability(x,z,X_train) == 1:
                         #return z
                         potential_CFs.append(z)
                     else:
-                        #traverse_space.pop(mid_idx)  # remove the tried value
-                        traverse_space = traverse_space[:mid_idx] if f.predict(z) != t else traverse_space[mid_idx + 1:]
+                        traverse_space.pop(mid_idx)  # remove the tried value
+                        #traverse_space = traverse_space[:mid_idx] if f.predict(z) != t else traverse_space[mid_idx + 1:]
 
             elif (i in cat_f and j in cat_f) and (i not in protect_f and j not in protect_f):
                 # g = classifier(df, i, j) # I don't get why this implementation
@@ -233,7 +233,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 z_noj = z.loc[:, z.columns != j]
                 new_j = g.predict(z_noj)
                 z.loc[:, j] = new_j
-                if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
+                if f.predict(z) == t: #and check_plausability(x,z,X_train) == 1:
                     #return z
                     potential_CFs.append(z)
                 else:
