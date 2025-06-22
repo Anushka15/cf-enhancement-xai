@@ -101,7 +101,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
 def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
     potential_CFs = []
     # does not use p-map
-    for f_pair in mi_pair:
+    for f_pair in mi_pair[:10]: #try first 10 pairs to see if infinitely running
         i = f_pair[0]
         j = f_pair[1] # i is first feature, j is second feature from tuple
         z = x.copy() # initialize CF
@@ -237,7 +237,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 else:
                     print('can not find CF for this cat value i, going to next feature pair')
     #return z
-    return potential_CFs.append(z)
+    return potential_CFs
 
 #TF still needs to be done
 
