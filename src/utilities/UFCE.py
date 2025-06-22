@@ -101,7 +101,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
 def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, t):
     potential_CFs = []
     # does not use p-map
-    for f_pair in mi_pair[:10]: #try first 10 pairs to see if infinitely running
+    for f_pair in mi_pair:
         i = f_pair[0]
         j = f_pair[1] # i is first feature, j is second feature from tuple
         z = x.copy() # initialize CF
@@ -141,7 +141,8 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                         #return z
                         potential_CFs.append(z)
                     else:
-                        traverse_space.pop(mid_idx)  # remove the tried value
+                        #traverse_space.pop(mid_idx)  # remove the tried value
+                        traverse_space = traverse_space[:mid_idx] if f.predict(z) != t else traverse_space[mid_idx + 1:]
 
             elif (i in cat_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0] #if cat, then only has 1 value
@@ -204,7 +205,8 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                         #return z
                         potential_CFs.append(z)
                     else:
-                        traverse_space.pop(mid_idx)  # remove the tried value
+                        #traverse_space.pop(mid_idx)  # remove the tried value
+                        traverse_space = traverse_space[:mid_idx] if f.predict(z) != t else traverse_space[mid_idx + 1:]
 
             elif (i in cat_f and j in cat_f) and (i not in protect_f and j not in protect_f):
                 # g = classifier(df, i, j) # I don't get why this implementation
