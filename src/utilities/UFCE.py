@@ -113,7 +113,9 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 h,mse,msse = regressor(df,j)
                 #traverse_space = sorted(random.uniform(start,end))
                 traverse_space = sorted([np.round(random.uniform(start, end), 2) for _ in range(20)]) # create distribution of 20 values
-                while len(traverse_space) > 0:
+                max_iter = 20
+                iter_count = 0
+                while len(traverse_space) > 0 and iter_count < max_iter:
                     #mid = start + (end-start)/2
                     #z.loc[:,i] = traverse_space[mid]
 
@@ -137,12 +139,13 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                     new_j = h.predict(z_noj)  # or g.predict depending on context
                     z.loc[:, j] = new_j
 
-                    if f.predict(z) == t: #and check_plausability(x,z,X_train) == 1:
+                    if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
                         #return z
                         potential_CFs.append(z)
                     else:
                         traverse_space.pop(mid_idx)  # remove the tried value
                         #traverse_space = traverse_space[:mid_idx] if f.predict(z) != t else traverse_space[mid_idx + 1:]
+                    iter_count += 1
 
             elif (i in cat_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0] #if cat, then only has 1 value
@@ -164,7 +167,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 z_noj = z.loc[:, z.columns != j]
                 new_j = h.predict(z_noj)
                 z.loc[:, j] = new_j
-                if f.predict(z) == t: #and check_plausability(x,z,X_train) == 1:
+                if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
                     #return z
                     potential_CFs.append(z)
                 else:
@@ -177,7 +180,9 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 g,acc = classifier(df,j)
                 #traverse_space = sorted(random.uniform(start,end))
                 traverse_space = sorted([np.round(random.uniform(start, end), 2) for _ in range(20)])  # create distribution of 20 values
-                while len(traverse_space) > 0:
+                max_iter = 20
+                iter_count = 0
+                while len(traverse_space) > 0 and iter_count < max_iter:
                     #mid = start + (end-start)/2
                     #z.loc[:,i] = traverse_space[mid]
 
@@ -201,12 +206,13 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                     new_j = g.predict(z_noj)  # or g.predict depending on context
                     z.loc[:, j] = new_j
 
-                    if f.predict(z) == t: #and check_plausability(x,z,X_train) == 1:
+                    if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
                         #return z
                         potential_CFs.append(z)
                     else:
                         traverse_space.pop(mid_idx)  # remove the tried value
                         #traverse_space = traverse_space[:mid_idx] if f.predict(z) != t else traverse_space[mid_idx + 1:]
+                    iter_count += 1
 
             elif (i in cat_f and j in cat_f) and (i not in protect_f and j not in protect_f):
                 # g = classifier(df, i, j) # I don't get why this implementation
@@ -233,7 +239,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 z_noj = z.loc[:, z.columns != j]
                 new_j = g.predict(z_noj)
                 z.loc[:, j] = new_j
-                if f.predict(z) == t: #and check_plausability(x,z,X_train) == 1:
+                if f.predict(z) == t and check_plausability(x,z,X_train) == 1:
                     #return z
                     potential_CFs.append(z)
                 else:
