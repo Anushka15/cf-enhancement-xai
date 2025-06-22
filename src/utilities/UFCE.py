@@ -37,7 +37,8 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
         if target_col in z.columns:
             z.loc[:, target_col] = True
         else:
-            print(f"all columns are 0 for this category, as it is the reference feature value")
+            pass
+            #print(f"all columns are 0 for this category, as it is the reference feature value")
 
         # kan bovenstaande ook conditioneren op onderstaande, anders niet veranderen
         #if f.predict(z)[0] == t and check_plausability(x,z,X_train) == 1:
@@ -162,6 +163,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 if target_col in z.columns:
                     z.loc[:, target_col] = True
                 else:
+                    pass
                     #print(f"all columns are 0 for this category, as it is the reference feature value")
                 #z.loc[:, i] = start
                 z_noj = z.loc[:, z.columns != j]
@@ -171,6 +173,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                     #return z
                     potential_CFs.append(z)
                 else:
+                    pass
                     #print('can not find CF for this cat value i, going to next feature pair')
 
 
@@ -235,6 +238,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 if target_col in z.columns:
                     z.loc[:, target_col] = True
                 else:
+                    pass
                     #print(f"all columns are 0 for this category, as it is the reference feature value")
                 z_noj = z.loc[:, z.columns != j]
                 new_j = g.predict(z_noj)
@@ -243,6 +247,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                     #return z
                     potential_CFs.append(z)
                 else:
+                    pass
                     #print('can not find CF for this cat value i, going to next feature pair')
     #return z
     return potential_CFs
