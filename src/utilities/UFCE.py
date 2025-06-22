@@ -105,7 +105,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
         i = f_pair[0]
         j = f_pair[1] # i is first feature, j is second feature from tuple
         z = x.copy() # initialize CF
-        print("going to next feature pair")
+        #print("going to next feature pair")
         if i in subspace and j in subspace:
             if (i in num_f and j in num_f) and (i not in protect_f and j not in protect_f):
                 start = subspace[i][0]
@@ -162,7 +162,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 if target_col in z.columns:
                     z.loc[:, target_col] = True
                 else:
-                    print(f"all columns are 0 for this category, as it is the reference feature value")
+                    #print(f"all columns are 0 for this category, as it is the reference feature value")
                 #z.loc[:, i] = start
                 z_noj = z.loc[:, z.columns != j]
                 new_j = h.predict(z_noj)
@@ -171,7 +171,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                     #return z
                     potential_CFs.append(z)
                 else:
-                    print('can not find CF for this cat value i, going to next feature pair')
+                    #print('can not find CF for this cat value i, going to next feature pair')
 
 
             elif (i in num_f and j in cat_f) and (i not in protect_f and j not in protect_f):
@@ -235,7 +235,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 if target_col in z.columns:
                     z.loc[:, target_col] = True
                 else:
-                    print(f"all columns are 0 for this category, as it is the reference feature value")
+                    #print(f"all columns are 0 for this category, as it is the reference feature value")
                 z_noj = z.loc[:, z.columns != j]
                 new_j = g.predict(z_noj)
                 z.loc[:, j] = new_j
@@ -243,7 +243,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                     #return z
                     potential_CFs.append(z)
                 else:
-                    print('can not find CF for this cat value i, going to next feature pair')
+                    #print('can not find CF for this cat value i, going to next feature pair')
     #return z
     return potential_CFs
 
@@ -261,7 +261,7 @@ def regressor(df, f_j):
     X = np.array(df.loc[:, ~df.columns.isin([f_j, 'class'])])
     X = np.array(df.loc[:, ~df.columns.isin([f_j, 'Personal Loan'])])
     y = np.array(df.loc[:, df.columns == f_j])
-    print(y)
+    #print(y)
     X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=.2, random_state=42) # moet ook preprocessed? ja denk het wel om preprocessed waarden te voorspellen
     linear_reg = LinearRegression()
     linear_reg.fit(X_train, y_train.ravel()) # .ravel() is
@@ -278,7 +278,7 @@ def classifier(df, f_j):
     X = np.array(df.loc[:, ~df.columns.isin([f_j, 'class'])]) # remove y of our dataset
     X = np.array(df.loc[:, ~df.columns.isin([f_j, 'Personal Loan'])]) # remove y of authors dataset
     y = np.array(df.loc[:, df.columns == f_j])
-    print(y)
+    #print(y)
     X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=.2, random_state=42) # moet ook preprocessed? ja denk het wel om preprocessed waarden te voorspellen
     log_reg = LogisticRegression(random_state=42)
     log_reg.fit(X_train, y_train.ravel()) # .ravel() is
