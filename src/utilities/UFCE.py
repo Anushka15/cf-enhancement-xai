@@ -6,6 +6,8 @@ from sklearn.model_selection import train_test_split
 from src.utilities.plausability import check_plausability
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import mean_squared_error
+import math
 
 def SF(x,X_train,p_num,p_cat,f,t,step):
     """
@@ -255,27 +257,33 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
 #TF still needs to be done
 
 def regressor(df, f_j):
-    # train regressor to predict feature j based on i from traverse space
     """
-    :param df: dataframe of all the data
-    :param f_j: the feature that we want to predict, the 'y'
-    note: 'class' is now also a independent feature # update: Removed class
-    :return:
+    Trains a LinearRegression model to predict feature f_j using all other features except the target and the label column.
+
+    :param df: Full DataFrame
+    :param f_j: Feature to be predicted
+    :return: Trained model, MSE, RMSE
     """
-    #X = np.array(df.loc[:, df.columns != f_j])
-    X = np.array(df.loc[:, ~df.columns.isin([f_j, 'class'])])
-    X = np.array(df.loc[:, ~df.columns.isin([f_j, 'Personal Loan'])])
-    y = np.array(df.loc[:, df.columns == f_j])
-    #print(y)
-    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=.2, random_state=42) # moet ook preprocessed? ja denk het wel om preprocessed waarden te voorspellen
-    linear_reg = LinearRegression()
-    linear_reg.fit(X_train, y_train.ravel()) # .ravel() is
-    y_pred = linear_reg.predict(X_test)
-    from sklearn.metrics import mean_squared_error
-    import math
+    # Drop the feature to be predicted and the label column
+    drop_cols = [f_j]
+    if 'class' in df.columns:
+        drop_cols.append('class')
+    if 'Personal Loan' in df.columns:
+        drop_cols.append('Personal Loan')
+
+    X = df.drop(columns=drop_cols)
+    y = df[f_j]
+
+    # Ensure matching columns during prediction
+    model = LinearRegression()
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    model.fit(X_train, y_train)
+
+    y_pred = model.predict(X_test)
     mse = mean_squared_error(y_test, y_pred)
-    msse = math.sqrt(mean_squared_error(y_test, y_pred))
-    return linear_reg, mse, msse
+    rmse = math.sqrt(mse)
+
+    return model, mse, rmse
 
 def classifier(df, f_j):
     # train classifier to predict feature j based on i from traverse space
