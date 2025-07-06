@@ -44,9 +44,9 @@ def intervals2(nn,p_num,p_cat,f2change,x):
     subspace = {}
     for i in p_num:
         lower = p_num[i][0]
-        print(lower)
+        #print(lower)
         upper = p_num[i][1]
-        print(upper)
+        #print(upper)
         if upper >= nn[i].max(): # For feature/column i, consider max value across all neighbor datapoints in nn (all rows)
             subspace[i] = [lower, nn[i].max()]
         elif lower <= nn[i].min():
@@ -55,5 +55,5 @@ def intervals2(nn,p_num,p_cat,f2change,x):
             subspace[i] = [lower, upper]
     for j in p_cat:
         subspace[j] = p_cat[j]
-        print('subspace cat val.: ', subspace[j])
+        #print('subspace cat val.: ', subspace[j])
     return subspace

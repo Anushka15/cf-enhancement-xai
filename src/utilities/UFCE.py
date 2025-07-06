@@ -22,7 +22,7 @@ def SF(x,X_train,p_num,p_cat,f,t,step):
     param step: steps in how to traverse p lower and upper bounds. Only applies to numerical features
     returns: z, a valid countefactual instance
     """
-    print("original x prediction: ", f.predict(x))
+    #print("original x prediction: ", f.predict(x))
     z_s = []
     for i in p_cat: #deze for loop eerst betekend dat cat sws verandert wordt
         z = x.copy()
@@ -116,7 +116,7 @@ def DF(df, x, X_train, subspace, mi_pair, cat_f, num_f, features, protect_f, f, 
                 h,mse,msse = regressor(df,j)
                 #traverse_space = sorted(random.uniform(start,end))
                 traverse_space = sorted([np.round(random.uniform(start, end), 2) for _ in range(20)]) # create distribution of 20 values
-                max_iter = 20
+                max_iter = 10
                 iter_count = 0
                 while len(traverse_space) > 0 and iter_count < max_iter:
                     #mid = start + (end-start)/2

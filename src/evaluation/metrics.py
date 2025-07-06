@@ -5,31 +5,44 @@ from sklearn.metrics import jaccard_score
 
 # Sample evaluation functions
 
-def compute_actionability(x, cf, actionable_features):
+def compute_actionability(x, cf, actionable_features, actionability_threshold=0.8):
     """
     Compute actionability as % of changes in actionable features.
+    Return True if ratio exceeds threshold, else False.
     """
+    # Check if cf is empty or has mismatched shape
+    if cf.empty or cf.shape[1] != x.shape[1]:
+        return False  # Not actionable if counterfactual is invalid
+
     changes = (x != cf).values[0]
     total_changes = np.sum(changes)
-    actionable_changes = np.sum([changes[x.columns.get_loc(f)] for f in actionable_features if f in x.columns])
-    return actionable_changes / total_changes if total_changes != 0 else 0
+
+    actionable_changes = np.sum([
+        changes[x.columns.get_loc(f)] for f in actionable_features if f in x.columns
+    ])
+
+    if total_changes == 0:
+        return False
+
+    return (actionable_changes / total_changes) >= actionability_threshold
+
 
 def compute_validity(model, cf, desired_output):
     """
     Check if model predicts the desired output for the counterfactual.
     """
-    return int(model.predict(cf)[0] == desired_output)
+    return model.predict(cf)[0] == desired_output
+
 
 def compute_plausibility(cf, X_train, n_neighbors=20):
     """
-    Use Local Outlier Factor (LOF) to check plausibility.
-    Score closer to 1 means more plausible.
+    Use LOF to return True if cf is plausible (i.e., not an outlier).
     """
     lof = LocalOutlierFactor(n_neighbors=n_neighbors, novelty=True)
     lof.fit(X_train)
-    score = lof.decision_function(cf)[0]
-    return score
 
+    label = lof.predict(cf)[0]
+    return label == 1
 def compute_sparsity(x, cf):
     """
     Compute sparsity as % of features changed.
@@ -53,7 +66,7 @@ def compute_proximity(x, cf, num_cols, cat_cols):
     return euclidean, jaccard
 
 
-def compute_feasibility(x, cf, actionable_features, model, desired_output, X_train):
+def compute_feasibility(x, cf, actionable_features, model, desired_output, X_train,actionability_threshold):
     """
     Computes the Feasibility of a counterfactual example.
 
@@ -68,16 +81,12 @@ def compute_feasibility(x, cf, actionable_features, model, desired_output, X_tra
     Returns:
     - feasibility_score: sum of actionability, plausibility, and validity
     """
-    actionability = compute_actionability(x, cf, actionable_features)  # Between 0 and 1
+    actionability = compute_actionability(x, cf, actionable_features,actionability_threshold)  # Between 0 and 1
     plausibility = compute_plausibility(cf, X_train)  # Higher is better
     validity = compute_validity(model, cf, desired_output)  # 0 or 1
 
     # Normalize plausibility score to be between 0 and 1
     # (if not already), for example using inverse LOF:
-    if plausibility <= 0:  # sanity check
-        plausibility_score = 0
-    else:
-        plausibility_score = min(1.0, 1.0 / plausibility)  # if LOF was used
 
-    feasibility_score = actionability + plausibility_score + validity
-    return feasibility_score
+    feasibility = actionability and plausibility and validity
+    return feasibility
